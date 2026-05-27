@@ -6,9 +6,9 @@ class PerformanceTracker:
 
     def reset(self):
         self.states_explored = 0
-        self.backtracks = 0
-        self.start_time = None
-        self.end_time = None
+        self.backtracks      = 0
+        self.start_time      = None
+        self.end_time        = None
 
     def start(self):
         self.reset()
@@ -26,12 +26,12 @@ class PerformanceTracker:
     def get_time(self):
         if self.start_time and self.end_time:
             return round(self.end_time - self.start_time, 4)
-        return 0
+        return 0.0
 
     def get_results(self, algorithm_name):
         return {
-            'algorithm': algorithm_name,
-            'time':      self.get_time(),
-            'states':    self.states_explored,
-            'backtracks': self.backtracks
+            'algorithm':  algorithm_name,
+            'time':       self.get_time(),
+            'states':     self.states_explored,   # always int
+            'backtracks': self.backtracks,         # always int
         }
