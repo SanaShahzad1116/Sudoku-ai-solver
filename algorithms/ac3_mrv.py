@@ -54,11 +54,13 @@ class AC3MRVSolver:
     def _revise(self, domains, xi, xj):
         revised = False
         for val in domains[xi][:]:
-            if all(val == v for v in domains[xj]):
+            # val ko support chahiye xj mein — koi alag value
+            if not any(v != val for v in domains[xj]):
                 domains[xi].remove(val)
                 revised = True
         return revised
-
+    
+  
     def _backtrack_mrv(self, csp, assignment, domains):
         if csp.is_complete(assignment):
             return assignment

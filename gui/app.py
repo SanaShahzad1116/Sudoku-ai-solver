@@ -422,7 +422,9 @@ class SudokuApp(tk.Tk):
             self.board_widget.flash_solved()
 
         diff = self.control.get_difficulty()
-        key  = (algo_name.replace(' + ', '+'), diff)
+        # AC3+MRV, Forward Checking, Simulated Annealing sahi format
+        algo_key = algo_name.replace(' + ', '+')
+        key = (algo_key, diff)
         res  = tracker.get_results(algo_name)
         self.results[key] = res
         self.results[key]['status'] = 'Solved' if solution else 'Failed'
@@ -435,19 +437,45 @@ class SudokuApp(tk.Tk):
         if self.current_board is None:
             messagebox.showwarning('No Puzzle', 'Generate a puzzle first!')
             return
-        diff = self.control.get_difficulty()
-        for algo_name, cls in ALGO_MAP.items():
-            self.control.set_status(f'Running {algo_name}...')
-            self.update()
-            solver   = cls()
-            solution = solver.solve(copy.deepcopy(self.current_board))
-            res      = solver.get_tracker().get_results(algo_name)
-            key      = (algo_name.replace(' + ', '+'), diff)
-            self.results[key] = res
-            self.results[key]['status'] = 'Solved' if solution else 'Failed'
+
+    # Fresh start — purana data clear karo
+        self.results = {}
+
+        self.control.set_status('Running all algorithms on all levels...')
+        self.update()
+
+        difficulties = ['Easy', 'Medium', 'Hard', 'Expert']
+
+        for diff in difficulties:
+            board, solution = self.generator.generate(diff)
+
+            for algo_name, cls in ALGO_MAP.items():
+                self.control.set_status(f'Running {algo_name} on {diff}...')
+                self.update()
+
+                try:
+                    solver          = cls()
+                    solution_result = solver.solve(copy.deepcopy(board))
+                    res             = solver.get_tracker().get_results(algo_name)
+                    algo_key        = algo_name.replace(' + ', '+')
+                    key             = (algo_key, diff)
+                    self.results[key] = res
+                    self.results[key]['status'] = 'Solved' if solution_result else 'Failed'
+
+                except Exception as e:
+                    algo_key = algo_name.replace(' + ', '+')
+                    key      = (algo_key, diff)
+                    self.results[key] = {
+                        'algorithm':  algo_name,
+                        'time':       'Error',
+                        'states':     'Error',
+                        'backtracks': 'Error',
+                        'status':     str(e)
+                    }
+
         self.control.set_status('Done! Opening dashboard...')
         Dashboard(self, self.results)
-
+   
     # ── ADVERSARIAL MODE ──────────────────────────────────
     def _adversarial(self):
         if self.current_board is None:

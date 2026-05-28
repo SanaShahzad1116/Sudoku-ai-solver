@@ -144,10 +144,15 @@ class SimulatedAnnealingSolver:
 
             delta = neighbor_cost - current_cost
 
-            if delta < 0 or random.random() < math.exp(
-                    max(-500, -delta / temp)):
-                current      = neighbor
+            # if delta < 0 or random.random() < math.exp(
+            #         max(-500, -delta / temp)):
+            #     current      = neighbor
+            #     current_cost = neighbor_cost
+            if delta < 0 or random.random() < math.exp(-delta / temp):
+                current = neighbor
                 current_cost = neighbor_cost
+            else:
+                self.tracker.add_backtrack()  # ✅ rejection count karo
 
                 # Only record step every 50 iterations (keep animation light)
                 if i % 50 == 0:
@@ -159,9 +164,9 @@ class SimulatedAnnealingSolver:
                     best_cost = current_cost
 
             # Count as backtrack when cost gets worse and we reject
-            else:
-                self.tracker.add_backtrack()
-
+                else:
+                    self.tracker.add_backtrack()
+ 
         self.tracker.stop()
         return best   # always return best found
 
