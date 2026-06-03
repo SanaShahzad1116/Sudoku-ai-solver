@@ -5,14 +5,6 @@ from performance.tracker import PerformanceTracker
 
 
 class AC3MRVSolver:
-    """
-    Informed Search — AC-3 arc consistency + MRV heuristic.
-
-    Phase 1: AC-3 preprocessing — prune domains globally before search.
-    Phase 2: Backtracking with MRV variable selection and
-             forward-checking-style domain propagation per step.
-    """
-
     def __init__(self):
         self.tracker = PerformanceTracker()
         self.steps = []
@@ -68,10 +60,6 @@ class AC3MRVSolver:
 
     # ── AC-3 ──────────────────────────────────────────────────────────────
     def _ac3(self, csp, domains):
-        """
-        Enforce arc consistency across entire constraint graph.
-        Returns False if any domain becomes empty (unsolvable).
-        """
         queue = deque()
         for var in csp.variables:
             for peer in csp.get_peers(var):
@@ -89,11 +77,7 @@ class AC3MRVSolver:
         return True
 
     def _revise(self, domains, xi, xj):
-        """
-        Remove values from domain(xi) that have no support in domain(xj).
-        A value v in xi has support if there exists w in xj where w != v
-        (because xi and xj must be different — AllDifferent constraint).
-        """
+   
         revised = False
         for val in list(domains[xi]):
             # Support exists if xj has at least one value != val

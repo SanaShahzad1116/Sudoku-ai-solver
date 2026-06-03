@@ -5,20 +5,10 @@ from performance.tracker import PerformanceTracker
 
 
 class SimulatedAnnealingSolver:
-    """
-    Local Search — Simulated Annealing.
-
-    Starts from a complete (but inconsistent) assignment,
-    iteratively reduces constraint violations via probabilistic
-    neighbour acceptance. Not guaranteed to find a solution.
-
-    States    = accepted moves (actual transitions)
-    Backtracks = rejected moves (cost-increasing moves refused)
-    """
-
     def __init__(self):
         self.tracker = PerformanceTracker()
         self.steps = []
+        self.initial_board = None
 
     def solve(self, board):
         self.steps = []
@@ -26,6 +16,7 @@ class SimulatedAnnealingSolver:
 
         current = self._fill_boxes(board)
         current_cost = self._cost(current)
+        self.initial_board = copy.deepcopy(current)
 
         temp = 2.0
         cooling = 0.9997
@@ -94,11 +85,6 @@ class SimulatedAnnealingSolver:
         return best
 
     def _fill_boxes(self, board):
-        """
-        Fill each 3x3 box with digits 1-9 (no intra-box duplicates).
-        This gives a complete assignment where only row/col constraints
-        may be violated — SA then works to fix those.
-        """
         grid = copy.deepcopy(board)
         for box_r in range(3):
             for box_c in range(3):
@@ -121,10 +107,6 @@ class SimulatedAnnealingSolver:
         return grid
 
     def _cost(self, grid):
-        """
-        Count total duplicates in rows and columns.
-        Cost = 0 means valid solution.
-        """
         cost = 0
         for i in range(9):
             cost += 9 - len(set(grid[i]))
@@ -132,11 +114,6 @@ class SimulatedAnnealingSolver:
         return cost
 
     def _get_neighbor(self, grid, fixed):
-        """
-        Swap two non-fixed cells within the same 3x3 box.
-        Preserves intra-box validity, changes row/col conflicts.
-        Returns (new_grid, r1, c1, r2, c2).
-        """
         new_grid = copy.deepcopy(grid)
         for _ in range(200):
             box_r = random.randint(0, 2)
@@ -162,3 +139,7 @@ class SimulatedAnnealingSolver:
 
     def get_steps(self):
         return self.steps
+    
+
+    def get_initial_board(self):
+        return self.initial_board

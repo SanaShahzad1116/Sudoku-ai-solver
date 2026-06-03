@@ -142,8 +142,14 @@ class SudokuApp(tk.Tk):
         solver   = ALGO_MAP[algo_name]()
         solution = solver.solve(board)
         steps    = solver.get_steps()
-        tracker  = solver.get_tracker()
-        delay    = (101 - speed) / 1000.0
+        if algo_name == "Simulated Annealing":
+            initial_board = solver.get_initial_board()
+            if initial_board:
+                self.board_widget.show_solution(initial_board)
+                self.update()
+                time.sleep(1)
+                tracker  = solver.get_tracker()
+                delay    = (101 - speed) / 1000.0
 
         for step in steps:
             if not self.solving:
