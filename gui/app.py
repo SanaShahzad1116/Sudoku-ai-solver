@@ -138,19 +138,58 @@ class SudokuApp(tk.Tk):
             daemon=True
         ).start()
 
+    # def _solve_thread(self, algo_name, speed, board, diff):
+    #     solver   = ALGO_MAP[algo_name]()
+    #     solution = solver.solve(board)
+    #     steps    = solver.get_steps()
+    #     if algo_name == "Simulated Annealing":
+    #         initial_board = solver.get_initial_board()
+    #         if initial_board:
+    #             self.board_widget.show_solution(initial_board)
+    #             self.update()
+    #             time.sleep(1)
+    #             tracker  = solver.get_tracker()
+    #             delay    = (101 - speed) / 1000.0
+
+    #     for step in steps:
+    #         if not self.solving:
+    #             break
+    #         r, c, val = step
+    #         self.board_widget.update_cell(
+    #             r, c, val,
+    #             '#00d4ff' if val != 0 else None)
+    #         self.update()
+    #         time.sleep(delay)
+
+    #     if solution and self.solving:
+    #         self.board_widget.show_solution(solution)
+    #         self.board_widget.flash_solved()
+
+    #     algo_key = algo_name.replace(' + ', '+')
+    #     key      = (algo_key, diff)
+    #     res      = tracker.get_results(algo_name)
+    #     self.results[key] = res
+    #     self.results[key]['status'] = 'Solved' if solution else 'Failed'
+
+    #     self.control.set_metrics(
+    #         res['time'], res['states'], res['backtracks'])
+    #     self.control.set_status(
+    #         '✅ Solved!' if solution else '❌ Failed')
+    #     self.solving = False
     def _solve_thread(self, algo_name, speed, board, diff):
-        solver   = ALGO_MAP[algo_name]()
+        solver = ALGO_MAP[algo_name]()
         solution = solver.solve(board)
-        steps    = solver.get_steps()
+        steps = solver.get_steps() 
+        # Define delay BEFORE using it - always calculate it
+        delay = (101 - speed) / 1000.0
+    
+        # Optional: Show initial board for Simulated Annealing
         if algo_name == "Simulated Annealing":
             initial_board = solver.get_initial_board()
             if initial_board:
                 self.board_widget.show_solution(initial_board)
                 self.update()
                 time.sleep(1)
-                tracker  = solver.get_tracker()
-                delay    = (101 - speed) / 1000.0
-
         for step in steps:
             if not self.solving:
                 break
@@ -166,8 +205,8 @@ class SudokuApp(tk.Tk):
             self.board_widget.flash_solved()
 
         algo_key = algo_name.replace(' + ', '+')
-        key      = (algo_key, diff)
-        res      = tracker.get_results(algo_name)
+        key = (algo_key, diff)
+        res = solver.get_tracker().get_results(algo_name)
         self.results[key] = res
         self.results[key]['status'] = 'Solved' if solution else 'Failed'
 

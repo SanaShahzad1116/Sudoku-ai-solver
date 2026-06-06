@@ -123,7 +123,7 @@ class ControlPanel(tk.Frame):
 
         spd_frame = tk.Frame(inner, bg=COLORS['bg'])
         spd_frame.pack(pady=3)
-        tk.Label(spd_frame, text='Fast', bg=COLORS['bg'],
+        tk.Label(spd_frame, text='Slow', bg=COLORS['bg'],
                  fg='#aaaaaa', font=('Arial', 9)).pack(side='left')
         self.speed_var = tk.IntVar(value=50)
         tk.Scale(
@@ -132,7 +132,7 @@ class ControlPanel(tk.Frame):
             bg=COLORS['bg'], fg=COLORS['accent'],
             highlightthickness=0, troughcolor='#2a2a4a', length=130
         ).pack(side='left', padx=3)
-        tk.Label(spd_frame, text='Slow', bg=COLORS['bg'],
+        tk.Label(spd_frame, text='Fast', bg=COLORS['bg'],
                  fg='#aaaaaa', font=('Arial', 9)).pack(side='left')
 
         # ── Separator ──────────────────────────────────
